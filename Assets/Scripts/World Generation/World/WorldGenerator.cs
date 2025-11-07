@@ -7,7 +7,7 @@ namespace VoxelWorld.WorldGeneration
     public class WorldGenerator : MonoBehaviour
     {
         public GameObject chunkPrefab;
-        public int worldSizeInChunks = 32;  // for testing, 2x2 chunks
+        public int worldSizeInChunks = 32;  // 2x2 chunks
         public float noiseScale = 0.065f;   // controls terrain smoothness
         public int heightMultiplier = 5;  // max terrain height
 
