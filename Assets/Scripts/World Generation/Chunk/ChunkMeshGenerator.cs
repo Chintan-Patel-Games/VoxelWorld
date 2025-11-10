@@ -37,13 +37,13 @@ namespace VoxelWorld.WorldGeneration.Chunks
 
             for (int x = 0; x < Chunk.chunkSize; x++)
             {
-                for (int y = 0; y < Chunk.chunkSize; y++)
+                for (int y = 0; y < Chunk.chunkHeight; y++)
                 {
                     for (int z = 0; z < Chunk.chunkSize; z++)
                     {
                         Block block = chunk.blocks[x, y, z];
 
-                        if (block.blockType == BlockType.Air) continue;
+                        if (block == null || block.blockType == BlockType.Air) continue;
 
                         // Check each direction
                         for (int i = 0; i < 6; i++)
@@ -76,12 +76,49 @@ namespace VoxelWorld.WorldGeneration.Chunks
 
         bool IsBlockSolid(Vector3Int pos)
         {
-            if (pos.x < 0 || pos.x >= Chunk.chunkSize ||
-                pos.y < 0 || pos.y >= Chunk.chunkSize ||
-                pos.z < 0 || pos.z >= Chunk.chunkSize)
+            // Inside same chunk
+            if (pos.x >= 0 && pos.x < Chunk.chunkSize &&
+                pos.y >= 0 && pos.y < Chunk.chunkHeight &&
+                pos.z >= 0 && pos.z < Chunk.chunkSize)
+            {
+                Block b = chunk.blocks[pos.x, pos.y, pos.z];
+                return b != null && b.blockType != BlockType.Air;
+            }
+
+            // --- Outside bounds: check neighbors carefully ---
+            int x = pos.x;
+            int y = pos.y;
+            int z = pos.z;
+
+            if (y < 0 || y >= Chunk.chunkHeight)
                 return false;
 
-            return chunk.blocks[pos.x, pos.y, pos.z].blockType != BlockType.Air;
+            // X axis
+            if (x < 0 && chunk.chunkWest != null)
+            {
+                Block b = chunk.chunkWest.blocks?[Chunk.chunkSize - 1, y, z];
+                return b != null && b.blockType != BlockType.Air;
+            }
+            if (x >= Chunk.chunkSize && chunk.chunkEast != null)
+            {
+                Block b = chunk.chunkEast.blocks?[0, y, z];
+                return b != null && b.blockType != BlockType.Air;
+            }
+
+            // Z axis
+            if (z < 0 && chunk.chunkSouth != null)
+            {
+                Block b = chunk.chunkSouth.blocks?[x, y, Chunk.chunkSize - 1];
+                return b != null && b.blockType != BlockType.Air;
+            }
+            if (z >= Chunk.chunkSize && chunk.chunkNorth != null)
+            {
+                Block b = chunk.chunkNorth.blocks?[x, y, 0];
+                return b != null && b.blockType != BlockType.Air;
+            }
+
+            // If neighbor chunk doesn't exist yet
+            return false;
         }
 
         void AddFace(int dir, Vector3 pos, BlockType type)

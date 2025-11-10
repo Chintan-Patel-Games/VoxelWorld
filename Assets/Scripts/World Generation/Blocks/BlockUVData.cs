@@ -20,6 +20,13 @@ namespace VoxelWorld.WorldGeneration.Blocks
                 case BlockType.Stone:
                     return new Vector2Int(2, 3);
 
+                case BlockType.Wood:
+                    if (dir == 4 || dir == 5) return new Vector2Int(0, 1); // Top/Bottom faces
+                    return new Vector2Int(0, 2);                           // Side faces
+
+                case BlockType.Leaves:
+                    return new Vector2Int(1, 1);
+
                 default:
                     return new Vector2Int(0, 3); // fallback tile
             }
