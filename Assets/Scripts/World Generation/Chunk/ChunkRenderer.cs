@@ -8,17 +8,12 @@ namespace VoxelWorld.WorldGeneration.Chunks
         public Chunk chunk;
         public GameObject cubePrefab;
 
-        void Start()
-        {
-            RenderChunk();
-        }
+        void Start() => RenderChunk();
 
         public void RenderChunk()
         {
             if (chunk == null)
-            {
                 chunk = GetComponent<Chunk>();
-            }
 
             for (int x = 0; x < Chunk.chunkSize; x++)
             {

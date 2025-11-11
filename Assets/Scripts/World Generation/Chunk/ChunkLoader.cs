@@ -20,19 +20,23 @@ namespace VoxelWorld.WorldGeneration.Chunks
 
         void Start()
         {
-            if (player == null)
+            if (chunkPrefab == null)
             {
-                Debug.LogError("ChunkLoader: Player reference not set!");
+                Debug.LogError("ChunkLoader: Missing chunk prefab reference!");
                 enabled = false;
                 return;
             }
 
-            currentPlayerChunk = GetChunkCoordFromPosition(player.position);
-            UpdateVisibleChunks(); // generate initial world
+            Debug.Log("ChunkLoader initialized (waiting for player reference).");
+
+            //currentPlayerChunk = GetChunkCoordFromPosition(player.position);
+            //UpdateVisibleChunks(); // generate initial world
         }
 
         void Update()
         {
+            if (player == null) return;
+
             Vector2Int newPlayerChunk = GetChunkCoordFromPosition(player.position);
 
             if (newPlayerChunk != currentPlayerChunk)
@@ -224,5 +228,18 @@ namespace VoxelWorld.WorldGeneration.Chunks
         }
 
         public bool HasChunkAt(Vector2Int coord) => activeChunks.ContainsKey(coord);
+
+        public bool IsChunkReady(Vector2Int coord)
+        {
+            if (activeChunks.TryGetValue(coord, out Chunk chunk))
+                return chunk.IsMeshReady;
+            return false;
+        }
+
+        public Chunk GetChunkAt(Vector2Int coord)
+        {
+            activeChunks.TryGetValue(coord, out Chunk chunk);
+            return chunk;
+        }
     }
 }

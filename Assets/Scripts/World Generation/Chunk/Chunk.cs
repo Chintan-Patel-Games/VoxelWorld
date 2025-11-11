@@ -14,9 +14,14 @@ namespace VoxelWorld.WorldGeneration.Chunks
         public static int chunkSize = 16;  // width/depth
         public static int chunkHeight = 128; // vertical height (if you separate later)
         public Block[,,] blocks;
+        public bool IsMeshReady { get; private set; } = false;
 
         void Awake() => blocks = new Block[chunkSize, chunkHeight, chunkSize];
 
-        public void BuildMesh() => GetComponent<ChunkMeshGenerator>().GenerateMesh();
+        public void BuildMesh()
+        {
+            GetComponent<ChunkMeshGenerator>().GenerateMesh();
+            IsMeshReady = true; // Mesh finished building
+        }
     }
 }

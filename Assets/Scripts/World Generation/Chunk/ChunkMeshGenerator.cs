@@ -19,13 +19,13 @@ namespace VoxelWorld.WorldGeneration.Chunks
 
         private Vector3[] faceDirections =
         {
-        Vector3.forward,
-        Vector3.back,
-        Vector3.left,
-        Vector3.right,
-        Vector3.up,
-        Vector3.down
-    };
+            Vector3.forward,
+            Vector3.back,
+            Vector3.left,
+            Vector3.right,
+            Vector3.up,
+            Vector3.down
+        };
 
         void Start() => chunk = GetComponent<Chunk>();
 
