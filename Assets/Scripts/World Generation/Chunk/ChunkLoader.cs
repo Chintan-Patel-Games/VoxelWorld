@@ -28,9 +28,6 @@ namespace VoxelWorld.WorldGeneration.Chunks
             }
 
             Debug.Log("ChunkLoader initialized (waiting for player reference).");
-
-            //currentPlayerChunk = GetChunkCoordFromPosition(player.position);
-            //UpdateVisibleChunks(); // generate initial world
         }
 
         void Update()
@@ -129,12 +126,21 @@ namespace VoxelWorld.WorldGeneration.Chunks
                     int worldX = x + coord.x * Chunk.chunkSize;
                     int worldZ = z + coord.y * Chunk.chunkSize;
 
-                    float frequency = 0.015f;
-                    float amplitude = 40f;
-                    float baseHeight = 20f;
+                    // Plains
+                    float plains = Mathf.PerlinNoise(worldX * 0.01f, worldZ * 0.01f) * 5f;
 
-                    float noise = Mathf.PerlinNoise((worldX + 1000) * frequency, (worldZ + 1000) * frequency);
-                    int surface = Mathf.RoundToInt(noise * amplitude + baseHeight);
+                    // Mountain mask
+                    float mask = Mathf.PerlinNoise(worldX * 0.008f, worldZ * 0.008f);
+                    mask = mask * mask * mask;
+
+                    // Mountains
+                    float mountains = Mathf.PerlinNoise(worldX * 0.05f, worldZ * 0.05f) * 50f;
+
+                    // New small variation noise
+                    float variation = Mathf.PerlinNoise(worldX * 0.07f, worldZ * 0.07f) * 3f;
+
+                    // Final height
+                    int surface = Mathf.FloorToInt(plains + mask * mountains + variation + 20f);
 
                     for (int y = 0; y < Chunk.chunkHeight; y++)
                     {
@@ -147,8 +153,25 @@ namespace VoxelWorld.WorldGeneration.Chunks
                             chunk.blocks[x, y, z] = new(BlockType.Grass, posInChunk);
 
                             // Decide whether to spawn a tree here
-                            if (Random.value < 0.05f && x > 2 && z > 2 && x < Chunk.chunkSize - 3 && z < Chunk.chunkSize - 3)
-                                treePositions.Add(new Vector3Int(x, y + 1, z)); // store tree base
+                            float treeNoise = Mathf.PerlinNoise(worldX * 0.004f, worldZ * 0.004f);
+
+                            // Base random chance
+                            float chance = 0.03f;
+
+                            // Adjust slightly by noise (but not a whole forest patch)
+                            chance += (treeNoise - 0.5f) * 0.02f;
+                            chance = Mathf.Clamp(chance, 0.01f, 0.05f);
+
+                            // Check random chance
+                            if (Random.value < chance)
+                            {
+                                // Spacing check (3 blocks minimum)
+                                Vector3Int pos2D = new Vector3Int(x, 0, z);
+                                if (!IsTreeNear(treePositions, pos2D, 5.5f))
+                                {
+                                    treePositions.Add(new Vector3Int(x, y + 1, z));
+                                }
+                            }
                         }
                         else if (y >= surface - 5)
                             chunk.blocks[x, y, z] = new(BlockType.Dirt, posInChunk);
@@ -181,6 +204,22 @@ namespace VoxelWorld.WorldGeneration.Chunks
                 chunk.chunkWest.BuildMesh();
 
             generatingChunks.Remove(coord);
+        }
+
+        private bool IsTreeNear(List<Vector3Int> list, Vector3Int pos, float minDist)
+        {
+            foreach (var p in list)
+            {
+                float dist = Vector2.Distance(
+                    new Vector2(pos.x, pos.z),
+                    new Vector2(p.x, p.z)
+                );
+
+                if (dist < minDist)
+                    return true;
+            }
+
+            return false;
         }
 
         private void GenerateTree(Chunk chunk, int x, int y, int z)
