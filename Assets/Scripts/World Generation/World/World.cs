@@ -1,7 +1,7 @@
 using UnityEngine;
 using VoxelWorld.WorldGeneration.Chunks;
 
-namespace VoxelWorld.WorldGeneration
+namespace VoxelWorld.WorldGeneration.World
 {
     public class World : MonoBehaviour
     {

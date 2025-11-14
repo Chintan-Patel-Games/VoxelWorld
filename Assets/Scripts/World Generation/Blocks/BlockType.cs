@@ -7,6 +7,7 @@ namespace VoxelWorld.WorldGeneration.Blocks
         Dirt,
         Stone,
         Wood,
-        Leaves
+        Leaves,
+        Snow
     }
 }

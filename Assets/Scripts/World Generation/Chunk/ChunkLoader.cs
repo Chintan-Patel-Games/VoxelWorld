@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using VoxelWorld.WorldGeneration.Blocks;
+using VoxelWorld.WorldGeneration.World.Biomes;
 
 namespace VoxelWorld.WorldGeneration.Chunks
 {
@@ -14,9 +15,24 @@ namespace VoxelWorld.WorldGeneration.Chunks
         [Header("Chunk Settings")]
         public int renderDistance = 4; // in chunks
 
+        BiomeProvider biomeProvider;
+
         private readonly Dictionary<Vector2Int, Chunk> activeChunks = new();
         private readonly Dictionary<Vector2Int, Coroutine> generatingChunks = new();
         private Vector2Int currentPlayerChunk;
+
+        void Awake()
+        {
+            int seed = Random.Range(0, 9999999);
+
+            biomeProvider = new BiomeProvider(seed);
+
+            biomeProvider.AddBiome(new PlainsBiome(), 0f, 0.40f);
+            biomeProvider.AddBiome(new OakForestBiome(), 0.40f, 0.65f);
+            biomeProvider.AddBiome(new DarkOakForestBiome(), 0.65f, 0.80f);
+            biomeProvider.AddBiome(new MountainBiome(), 0.80f, 0.95f);
+            biomeProvider.AddBiome(new SnowyMountainBiome(), 0.95f, 1.00f);
+        }
 
         void Start()
         {
@@ -126,21 +142,30 @@ namespace VoxelWorld.WorldGeneration.Chunks
                     int worldX = x + coord.x * Chunk.chunkSize;
                     int worldZ = z + coord.y * Chunk.chunkSize;
 
-                    // Plains
-                    float plains = Mathf.PerlinNoise(worldX * 0.01f, worldZ * 0.01f) * 5f;
+                    //// Plains
+                    //float plains = Mathf.PerlinNoise(worldX * 0.01f, worldZ * 0.01f) * 5f;
 
-                    // Mountain mask
-                    float mask = Mathf.PerlinNoise(worldX * 0.008f, worldZ * 0.008f);
-                    mask = mask * mask * mask;
+                    //// Mountain mask
+                    //float mask = Mathf.PerlinNoise(worldX * 0.008f, worldZ * 0.008f);
+                    //mask = mask * mask * mask;
 
-                    // Mountains
-                    float mountains = Mathf.PerlinNoise(worldX * 0.05f, worldZ * 0.05f) * 50f;
+                    //// Mountains
+                    //float mountains = Mathf.PerlinNoise(worldX * 0.05f, worldZ * 0.05f) * 50f;
 
-                    // New small variation noise
-                    float variation = Mathf.PerlinNoise(worldX * 0.07f, worldZ * 0.07f) * 3f;
+                    //// New small variation noise
+                    //float variation = Mathf.PerlinNoise(worldX * 0.07f, worldZ * 0.07f) * 3f;
 
-                    // Final height
-                    int surface = Mathf.FloorToInt(plains + mask * mountains + variation + 20f);
+                    //// Final height
+                    //int surface = Mathf.FloorToInt(plains + mask * mountains + variation + 20f);
+
+                    Biome biome = biomeProvider.GetBiome(worldX, worldZ);
+
+                    float frequency = 0.015f;
+                    float heightBase = Mathf.PerlinNoise(worldX * frequency, worldZ * frequency);
+
+                    int surface = Mathf.FloorToInt(
+                        heightBase * biome.HeightMultiplier + biome.HeightOffset
+                    );
 
                     for (int y = 0; y < Chunk.chunkHeight; y++)
                     {
@@ -150,6 +175,7 @@ namespace VoxelWorld.WorldGeneration.Chunks
                             chunk.blocks[x, y, z] = new(BlockType.Air, posInChunk);
                         else if (y == surface)
                         {
+                            BlockType surfaceBlock = biome.GetSurfaceBlock(surface);
                             chunk.blocks[x, y, z] = new(BlockType.Grass, posInChunk);
 
                             // Decide whether to spawn a tree here
