@@ -1,17 +1,16 @@
-using VoxelWorld.WorldGeneration.Blocks;
-
 namespace VoxelWorld.WorldGeneration.World.Biomes
 {
     public class PlainsBiome : Biome
     {
-        public override string Name => "Plains";
-
+        public override float BaseFrequency => 0.015f;
         public override float HeightMultiplier => 10f;
-        public override float HeightOffset => 20f;
 
-        public override float TreeChance => 0.01f; // almost none
+        public override float MountainFrequency => 0.001f;
+        public override float MountainStrength => 0f;
 
-        public override BlockType GetSurfaceBlock(int height)
-            => BlockType.Grass;
+        public override float VariationFrequency => 0.03f;
+        public override float VariationStrength => 2f;
+
+        public override int HeightOffset => 20;
     }
 }
