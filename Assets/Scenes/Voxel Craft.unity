@@ -289,9 +289,10 @@ MonoBehaviour:
   seed: 12345
   chunkLoadDelay: 0
   VIEW_RADIUS: 4
-  LOAD_RADIUS: 6
-  player: {fileID: 0}
+  LOAD_RADIUS: 5
+  UNLOAD_DATA_RADIUS: 8
   simulationDistance: 1
+  player: {fileID: 0}
 --- !u!4 &924326231
 Transform:
   m_ObjectHideFlags: 0

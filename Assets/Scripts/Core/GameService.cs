@@ -20,10 +20,11 @@ namespace VoxelWorld.Core
         [SerializeField] private int worldSeed = 12345;
 
         // Services
-        private WorldService worldService;
         private Transform player;
         private Vector3 spawnPos;
-        
+
+        public WorldService worldService { get; private set; }
+        public TreeService TreeService { get; private set; }
         public EventService EventService { get; private set; }
 
         protected override void Awake()
@@ -40,6 +41,8 @@ namespace VoxelWorld.Core
                 worldSeed,
                 loadDelay
             );
+
+            TreeService = new TreeService(worldSeed);
 
             EventService = new EventService();
         }

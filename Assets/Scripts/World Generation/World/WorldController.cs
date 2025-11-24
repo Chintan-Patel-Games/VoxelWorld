@@ -12,8 +12,8 @@ namespace VoxelWorld.WorldGeneration.World
         public int seed = 12345;
         public float chunkLoadDelay = 0f;
         public int VIEW_RADIUS = 4;  // visible mesh radius
-        public int LOAD_RADIUS = 6;  // chunk load radius
-        public int UNLOAD_DATA_RADIUS = 10; // safe radius before destroying chunk data
+        public int LOAD_RADIUS = 5;  // chunk load radius
+        public int UNLOAD_DATA_RADIUS = 8; // safe radius before destroying chunk data
         public int simulationDistance = 1; // chunks radius where colliders & simulation are enabled
 
         [Header("Player")]
@@ -83,8 +83,7 @@ namespace VoxelWorld.WorldGeneration.World
                 }
             }
 
-            // Unload (destroy) chunks that are outside LOAD_RADIUS
-            // Instead of removing them from ActiveChunks immediately, ensure they are not in neededLoad.
+            // Unload chunks that are outside LOAD_RADIUS
             List<Vector2Int> toUnloadMesh = new List<Vector2Int>();
 
             foreach (var coord in visibleSet)

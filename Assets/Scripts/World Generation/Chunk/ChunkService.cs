@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using VoxelWorld.Core;
 using VoxelWorld.WorldGeneration.Blocks;
 
 namespace VoxelWorld.WorldGeneration.Chunks
@@ -54,6 +55,9 @@ namespace VoxelWorld.WorldGeneration.Chunks
 
             // Fill blocks via controller method
             controller.GenerateBlocks(terrainFunc);
+
+            // Add trees BEFORE mesh generation
+            GameService.Instance.TreeService.TryPlaceTrees(controller, GameService.Instance.worldService.GetTerrainService());
 
             // small yield if chunk-heavy; respect requested delay between rows to avoid stutter
             if (delay > 0f) yield return new WaitForSeconds(delay);
