@@ -32,6 +32,7 @@ namespace VoxelWorld.Core
             base.Awake();
             Application.targetFrameRate = 60;
             InitializeServices();
+            worldController.SetupFog();
         }
 
         private void InitializeServices()

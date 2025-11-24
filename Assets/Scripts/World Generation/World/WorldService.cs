@@ -18,11 +18,14 @@ namespace VoxelWorld.WorldGeneration.World
 
             // --- Setup Biomes ---
             biomeProvider = new BiomeProvider(seed, 0.005f, 1.25f);
-            biomeProvider.AddBiome(new OakForestBiome(), 0f, 0.35f);
-            biomeProvider.AddBiome(new DarkOakForestBiome(), 0.35f, 0.55f);
-            biomeProvider.AddBiome(new PlainsBiome(), 0.55f, 0.70f);
-            biomeProvider.AddBiome(new MountainBiome(), 0.70f, 0.85f);
-            biomeProvider.AddBiome(new SnowyMountainBiome(), 0.85f, 1.0f);
+            //biomeProvider.AddBiome(new OakForestBiome(), 0f, 0.35f);
+            //biomeProvider.AddBiome(new DarkOakForestBiome(), 0.35f, 0.55f);
+            //biomeProvider.AddBiome(new PlainsBiome(), 0.55f, 0.70f);
+            //biomeProvider.AddBiome(new MountainBiome(), 0.70f, 0.85f);
+            //biomeProvider.AddBiome(new SnowyMountainBiome(), 0.85f, 1.0f);
+            biomeProvider.AddBiome(new OakForestBiome(), 0f, 0.5f);
+            biomeProvider.AddBiome(new PlainsBiome(), 0.5f, 0.7f);
+            biomeProvider.AddBiome(new MountainBiome(), 0.7f, 1.0f);
 
             // --- Terrain generator ---
             terrainService = new TerrainService(seed, biomeProvider);

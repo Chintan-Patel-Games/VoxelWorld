@@ -292,6 +292,9 @@ MonoBehaviour:
   LOAD_RADIUS: 5
   UNLOAD_DATA_RADIUS: 8
   simulationDistance: 1
+  fogColor: {r: 0.7, g: 0.8, b: 0.9, a: 1}
+  useLinearFog: 1
+  fogDensity: 0.05
   player: {fileID: 0}
 --- !u!4 &924326231
 Transform:

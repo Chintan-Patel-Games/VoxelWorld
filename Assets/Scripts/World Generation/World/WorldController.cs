@@ -7,7 +7,7 @@ namespace VoxelWorld.WorldGeneration.World
 {
     public class WorldController : GenericMonoSingleton<WorldController>
     {
-        [Header("World")]
+        [Header("World Settings")]
         public GameObject chunkPrefab;
         public int seed = 12345;
         public float chunkLoadDelay = 0f;
@@ -15,6 +15,11 @@ namespace VoxelWorld.WorldGeneration.World
         public int LOAD_RADIUS = 5;  // chunk load radius
         public int UNLOAD_DATA_RADIUS = 8; // safe radius before destroying chunk data
         public int simulationDistance = 1; // chunks radius where colliders & simulation are enabled
+
+        [Header("Atmosphere Settings")]
+        public Color fogColor = new(0.7f, 0.8f, 0.9f);
+        public bool useLinearFog = true;
+        public float fogDensity = 0.1f;
 
         [Header("Player")]
         public Transform player;
@@ -162,6 +167,24 @@ namespace VoxelWorld.WorldGeneration.World
                         chunk.View.meshCollider.sharedMesh = null;
                     }
                 }
+            }
+        }
+
+        public void SetupFog()
+        {
+            RenderSettings.fog = true;
+            RenderSettings.fogColor = fogColor;
+
+            if (useLinearFog)
+            {
+                RenderSettings.fogMode = FogMode.Linear;
+                RenderSettings.fogStartDistance = (VIEW_RADIUS - 1) * 16;
+                RenderSettings.fogEndDistance = VIEW_RADIUS * 16 * 1.2f;
+            }
+            else
+            {
+                RenderSettings.fogMode = FogMode.Exponential;
+                RenderSettings.fogDensity = fogDensity;
             }
         }
     }
