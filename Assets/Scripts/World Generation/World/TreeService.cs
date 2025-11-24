@@ -70,8 +70,7 @@ namespace VoxelWorld.WorldGeneration.World
             if (baseBlock == null || baseBlock.blockType != BlockType.Grass) return;
 
             // ensure tree stays inside the chunk (avoid cutting)
-            if (lx < 2 || lx > size - 3 || lz < 2 || lz > size - 3)
-                return;
+            if (lx < 2 || lx > size - 3 || lz < 2 || lz > size - 3) return;
 
             // generate tree
             int height = biome.TreeMinHeight + (int)(biome.TreeHeightVariation * biome.Noise(worldX, worldZ));

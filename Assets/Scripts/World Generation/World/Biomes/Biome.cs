@@ -17,6 +17,9 @@ namespace VoxelWorld.WorldGeneration.World.Biomes
 
         public abstract int HeightOffset { get; }
 
+        public virtual int MinPossibleHeight => 35;
+        public virtual int MaxPossibleHeight => 120;
+
         public abstract bool CanGrowTrees { get; }
         public abstract float TreeSpawnThreshold { get; }
         public abstract int TreeMinHeight { get; }

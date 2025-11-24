@@ -9,6 +9,7 @@ namespace VoxelWorld.WorldGeneration.World
     {
         private int seed;
         private BiomeProvider biomeProvider;
+        public BiomeProvider BiomeProvider => biomeProvider;
 
         public TerrainService(int seed, BiomeProvider biomeProvider)
         {
@@ -21,34 +22,37 @@ namespace VoxelWorld.WorldGeneration.World
         {
             biomeProvider.GetBiomeWeights(worldX, worldZ, out var weights);
 
-            float height = 0f;
+            float finalHeight = 0f;
 
             foreach (var w in weights)
             {
                 float h = CalculateBiomeHeight(worldX, worldZ, w.biome);
-                height += h * w.weight;
+                finalHeight += h * w.weight;
             }
 
-            return Mathf.Clamp(Mathf.RoundToInt(height), 1, ChunkService.chunkHeight - 2);
+            return Mathf.Clamp(Mathf.RoundToInt(finalHeight), 1, ChunkService.chunkHeight - 2);
         }
 
         // BIOME-SPECIFIC TERRAIN CALCULATION
         private float CalculateBiomeHeight(int x, int z, Biome biome)
         {
-            // Base terrain (broad features)
-            float baseNoise =
-                Perlin2D(x, z, biome.BaseFrequency, seed) * biome.BaseStrength;
+            float baseNoise = Perlin(x, z, biome.BaseFrequency, seed) * biome.BaseStrength;
+            float variation = Perlin(x, z, biome.VariationFrequency, seed + 1) * biome.VariationStrength;
 
-            // Ridge noise (for hills & mountains)
-            float ridgeNoise =
-                Mathf.Abs(Perlin2D(x, z, biome.MountainFrequency, seed * 2) - 0.5f) * 2f;
-            ridgeNoise *= biome.MountainStrength;
+            // Soft mountain noise — no cliffs
+            float mountain = Mathf.Abs(
+                Perlin(x, z, biome.MountainFrequency, seed + 2) - 0.5f
+            ) * 2f * biome.MountainStrength;
 
-            // Detail noise (minor bumps)
-            float detailNoise =
-                Perlin2D(x, z, biome.VariationFrequency, seed * 3) * biome.VariationStrength;
+            return baseNoise + mountain + variation + biome.HeightOffset;
+        }
 
-            return baseNoise + ridgeNoise + detailNoise + biome.HeightOffset;
+        private float Perlin(int x, int z, float freq, int seedOff)
+        {
+            return Mathf.PerlinNoise(
+                (x + seedOff) * freq,
+                (z + seedOff) * freq
+            );
         }
 
         // Returns block type at specific position
@@ -56,25 +60,11 @@ namespace VoxelWorld.WorldGeneration.World
         {
             int surface = GetSurfaceHeight(worldX, worldZ);
 
-            if (y > surface)
-                return BlockType.Air;
-
-            if (y == surface)
-                return BlockType.Grass;
-
-            if (y >= surface - 4)
-                return BlockType.Dirt;
+            if (y > surface) return BlockType.Air;
+            if (y == surface) return BlockType.Grass;
+            if (y >= surface - 4) return BlockType.Dirt;
 
             return BlockType.Stone;
-        }
-
-        // Perlin Helper
-        private float Perlin2D(int x, int z, float frequency, int seedOffset)
-        {
-            return Mathf.PerlinNoise(
-                (x + seedOffset) * frequency,
-                (z + seedOffset) * frequency
-            );
         }
 
         public void GetBiome(int worldX, int worldZ, out Biome biome)
@@ -91,13 +81,6 @@ namespace VoxelWorld.WorldGeneration.World
                     maxWeight = w.weight;
                     biome = w.biome;
                 }
-            }
-
-            // Fallback: guarantees NEVER null
-            if (biome == null)
-            {
-                biome = biomeProvider.DefaultBiome;
-                Debug.LogWarning($"[TerrainService] Using fallback biome at {worldX},{worldZ}");
             }
         }
     }

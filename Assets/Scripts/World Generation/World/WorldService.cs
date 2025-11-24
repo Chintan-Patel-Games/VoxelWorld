@@ -17,7 +17,7 @@ namespace VoxelWorld.WorldGeneration.World
             this.loadDelay = loadDelay;
 
             // --- Setup Biomes ---
-            biomeProvider = new BiomeProvider(seed);
+            biomeProvider = new BiomeProvider(seed, 0.005f, 1.25f);
             biomeProvider.AddBiome(new OakForestBiome(), 0f, 0.35f);
             biomeProvider.AddBiome(new DarkOakForestBiome(), 0.35f, 0.55f);
             biomeProvider.AddBiome(new PlainsBiome(), 0.55f, 0.70f);
