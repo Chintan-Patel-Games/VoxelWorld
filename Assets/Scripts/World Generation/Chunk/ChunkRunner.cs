@@ -3,13 +3,14 @@ using System.Collections.Generic;
 using UnityEngine;
 using VoxelWorld.Core;
 using VoxelWorld.Core.Utilities;
+using VoxelWorld.WorldGeneration.Meshes;
 
 namespace VoxelWorld.WorldGeneration.Chunks
 {
     public class ChunkRunner : GenericMonoSingleton<ChunkRunner>
     {
         // Mesh application queue (main thread): (controller, meshData)
-        private static readonly Queue<(ChunkController, MeshData)> pendingMeshApplies = new();
+        private static readonly Queue<(ChunkController, MeshModel)> pendingMeshApplies = new();
         private static readonly object meshQueueLock = new();
 
         // Collider assignment queue (main thread): (controller, mesh)
@@ -37,7 +38,7 @@ namespace VoxelWorld.WorldGeneration.Chunks
         public static Coroutine Run(IEnumerator routine) => Instance.StartCoroutine(routine);
 
         // Worker threads call this to enqueue MeshData for application
-        public static void EnqueueMeshApply(ChunkController controller, MeshData meshData)
+        public static void EnqueueMeshApply(ChunkController controller, MeshModel meshData)
         {
             if (controller == null || meshData == null) return;
 
@@ -62,7 +63,7 @@ namespace VoxelWorld.WorldGeneration.Chunks
             // Apply up to meshAppliesPerFrame meshes per frame
             for (int i = 0; i < meshAppliesPerFrame; i++)
             {
-                (ChunkController controller, MeshData data) item;
+                (ChunkController controller, MeshModel data) item;
                 lock (meshQueueLock)
                 {
                     if (pendingMeshApplies.Count == 0) break;
@@ -87,7 +88,7 @@ namespace VoxelWorld.WorldGeneration.Chunks
         }
 
         // Runs on main thread: create Unity Mesh and assign to MeshFilter (but NOT collider here)
-        private void ApplyMesh(ChunkController controller, MeshData data)
+        private void ApplyMesh(ChunkController controller, MeshModel data)
         {
             // If chunk was destroyed, ignore this mesh
             if (!GameService.ChunkService.ActiveChunks.ContainsKey(controller.Coord)) return;

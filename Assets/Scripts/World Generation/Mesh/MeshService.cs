@@ -1,10 +1,11 @@
 using System.Threading.Tasks;
 using UnityEngine;
 using VoxelWorld.Core;
+using VoxelWorld.WorldGeneration.Chunks;
 
-namespace VoxelWorld.WorldGeneration.Chunks
+namespace VoxelWorld.WorldGeneration.Meshes
 {
-    public static class ChunkMeshService
+    public static class MeshService
     {
         // reuse faceDirections publicly for MeshGenerator
         public static readonly Vector3Int[] faceDirections = new Vector3Int[]
@@ -26,7 +27,7 @@ namespace VoxelWorld.WorldGeneration.Chunks
             // Kick off background task - don't touch UnityEngine objects in the worker
             Task.Run(() =>
             {
-                MeshData data = MeshGenerator.GenerateMeshData(controller);
+                MeshModel data = MeshController.GenerateMeshData(controller);
 
                 // Enqueue for main-thread application (ChunkRunner will budget the applies)
                 ChunkRunner.EnqueueMeshApply(controller, data);

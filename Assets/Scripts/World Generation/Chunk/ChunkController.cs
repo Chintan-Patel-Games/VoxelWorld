@@ -1,6 +1,7 @@
 using System;
 using UnityEngine;
 using VoxelWorld.WorldGeneration.Blocks;
+using VoxelWorld.WorldGeneration.Meshes;
 
 namespace VoxelWorld.WorldGeneration.Chunks
 {
@@ -41,8 +42,8 @@ namespace VoxelWorld.WorldGeneration.Chunks
                         Model.blocks[x, y, z] = new Block(generator(x, y, z), new Vector3Int(x, y, z));
         }
 
-        public void BuildMesh() => ChunkMeshService.RequestMeshBuild(this);
-        public void RebuildMesh() => ChunkMeshService.RequestMeshBuild(this);
+        public void BuildMesh() => MeshService.RequestMeshBuild(this);
+        public void RebuildMesh() => MeshService.RequestMeshBuild(this);
 
         // Apply neighbor: this sets neighbor in direction 'dir' and also wires up the reciprocal link on the neighbor.
         public void ApplyNeighbor(Direction dir, ChunkController neighbor)
