@@ -20,20 +20,6 @@ namespace VoxelWorld.WorldGeneration.Chunks
         private const int meshAppliesPerFrame = 2;
         private const int colliderAppliesPerFrame = 1;
 
-        //public static ChunkRunner Instance
-        //{
-        //    get
-        //    {
-        //        if (_instance == null)
-        //        {
-        //            GameObject runner = new GameObject("ChunkRunner");
-        //            _instance = runner.AddComponent<ChunkRunner>();
-        //            DontDestroyOnLoad(runner);
-        //        }
-        //        return _instance;
-        //    }
-        //}
-
         // StartCoroutine helper
         public static Coroutine Run(IEnumerator routine) => Instance.StartCoroutine(routine);
 

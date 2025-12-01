@@ -2,20 +2,18 @@ namespace VoxelWorld.WorldGeneration.World.Biomes
 {
     public class MountainBiome : Biome
     {
-        public override string Name => "Mountain Biome";
-        public override float BaseFrequency => 0.008f;
-        public override float BaseStrength => 12f;
+        public override float BaseFrequency => 0.006f;
+        public override float BaseStrength => 16f;
 
-        public override float MountainFrequency => 0.006f;
-        public override float MountainStrength => 80f;
+        public override float MountainFrequency => 0.001f;
+        public override float MountainStrength => 18f;
 
-        public override float VariationFrequency => 0.03f;
+        public override float VariationFrequency => 0.02f;
         public override float VariationStrength => 10f;
 
-        public override int HeightOffset => 60;
-
-        public override int MinPossibleHeight => 60;
-        public override int MaxPossibleHeight => 110;
+        public override float HeightOffset => 10;
+        public override float HeightMultiplier => 1.5f;
+        public override float MinHeight => 0f;
 
         // Properties for tree generation
         public override bool CanGrowTrees => true;

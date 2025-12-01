@@ -11,10 +11,10 @@ namespace VoxelWorld.WorldGeneration.World
         public GameObject chunkPrefab;
         public int seed = 12345;
         public float chunkLoadDelay = 0f;
-        public int VIEW_RADIUS = 4;  // visible mesh radius
-        public int LOAD_RADIUS = 5;  // chunk load radius
-        public int UNLOAD_DATA_RADIUS = 8; // safe radius before destroying chunk data
-        public int simulationDistance = 1; // chunks radius where colliders & simulation are enabled
+        public int VIEW_RADIUS = 8;  // visible mesh radius
+        public int LOAD_RADIUS = 10;  // chunk load radius
+        public int UNLOAD_DATA_RADIUS = 12; // safe radius before destroying chunk data
+        public int simulationDistance = 2; // chunks radius where colliders & simulation are enabled
 
         [Header("Atmosphere Settings")]
         public Color fogColor = new(0.7f, 0.8f, 0.9f);
@@ -29,9 +29,7 @@ namespace VoxelWorld.WorldGeneration.World
 
         // Keep track of which coords currently have meshes built (visible)
         private readonly HashSet<Vector2Int> visibleSet = new HashSet<Vector2Int>();
-
-        // Keep track of which coords are loaded (have chunk data)
-        private readonly HashSet<Vector2Int> loadedSet = new HashSet<Vector2Int>();
+        private Vector2Int lastPlayerChunk = new Vector2Int(int.MinValue, int.MinValue);
 
         public void Init(WorldService worldService)
         {
@@ -42,57 +40,52 @@ namespace VoxelWorld.WorldGeneration.World
         void Update()
         {
             if (player == null || worldService == null) return;
-            StreamAroundPlayer();
+
+            Vector2Int currentCoord = worldService.WorldToChunkCoord(player.position);
+
+            if (currentCoord != lastPlayerChunk)
+            {
+                StreamAroundPlayer(currentCoord);
+                lastPlayerChunk = currentCoord;
+            }
         }
 
-        private void StreamAroundPlayer()
+        private void StreamAroundPlayer(Vector2Int playerCoord)
         {
-            Vector2Int playerCoord = worldService.WorldToChunkCoord(player.position);
+            HashSet<Vector2Int> neededLoad = new();
+            foreach (var coord in GetChunkCoordsInRings(playerCoord, LOAD_RADIUS))
+                neededLoad.Add(coord);
 
-            // Build needed sets
-            HashSet<Vector2Int> neededLoad = new HashSet<Vector2Int>();
-            HashSet<Vector2Int> neededView = new HashSet<Vector2Int>();
-
-            // LOAD CHUNK RING
-            for (int dx = -LOAD_RADIUS; dx <= LOAD_RADIUS; dx++)
-                for (int dz = -LOAD_RADIUS; dz <= LOAD_RADIUS; dz++)
-                    neededLoad.Add(new Vector2Int(playerCoord.x + dx, playerCoord.y + dz));
-
-            // VIEW CHUNK RING
-            for (int dx = -VIEW_RADIUS; dx <= VIEW_RADIUS; dx++)
-                for (int dz = -VIEW_RADIUS; dz <= VIEW_RADIUS; dz++)
-                    neededView.Add(new Vector2Int(playerCoord.x + dx, playerCoord.y + dz));
+            HashSet<Vector2Int> neededView = new();
+            foreach (var coord in GetChunkCoordsInRings(playerCoord, VIEW_RADIUS))
+                neededView.Add(coord);
 
             foreach (var coord in neededLoad)
             {
-                if (!chunkService.HasChunk(coord) && !IsGenerating(coord))
-                {
-                    // Chunk data generation; onChunkReady lets us set initial simulation flag
-                    chunkService.GenerateChunk(
-                        coord,
-                        0f,
-                        (cx, y, cz) =>
-                        {
-                            int worldX = coord.x * ChunkService.chunkSize + cx;
-                            int worldZ = coord.y * ChunkService.chunkSize + cz;
-                            return worldService.GetTerrainService().GetBlockTypeAt(worldX, worldZ, y);
-                        },
-                        onChunkReady: (chunk) =>
-                        {
-                            // set RequiresCollider if inside simulationDistance of player
-                            int dx = Mathf.Abs(chunk.Coord.x - playerCoord.x);
-                            int dz = Mathf.Abs(chunk.Coord.y - playerCoord.y);
-                            chunk.RequiresCollider = (dx <= simulationDistance && dz <= simulationDistance);
-                        }
-                    );
-                }
+                chunkService.GenerateChunk(
+                    coord,
+                    0f,
+                    (cx, y, cz) =>
+                    {
+                        int worldX = coord.x * ChunkService.chunkSize + cx;
+                        int worldZ = coord.y * ChunkService.chunkSize + cz;
+                        return worldService.GetTerrainService().GetBlockTypeAt(worldX, worldZ, y);
+                    },
+                    onChunkReady: (chunk) =>
+                    {
+                        int dx = Mathf.Abs(chunk.Coord.x - playerCoord.x);
+                        int dz = Mathf.Abs(chunk.Coord.y - playerCoord.y);
+
+                        chunk.RequiresCollider = (dx <= simulationDistance && dz <= simulationDistance);
+                    }
+                );
             }
 
             // Unload chunks that are outside LOAD_RADIUS
             List<Vector2Int> toUnloadMesh = new List<Vector2Int>();
 
             foreach (var coord in visibleSet)
-                if (!neededLoad.Contains(coord))
+                if (!neededView.Contains(coord))
                     toUnloadMesh.Add(coord);
 
             foreach (var coord in toUnloadMesh)
@@ -112,7 +105,7 @@ namespace VoxelWorld.WorldGeneration.World
                     Mathf.Abs(coord.y - playerCoord.y)
                 );
 
-                if (dist > UNLOAD_DATA_RADIUS)
+                if (dist > UNLOAD_DATA_RADIUS && !neededLoad.Contains(coord))
                     toDestroyData.Add(coord);
             }
 
@@ -140,8 +133,25 @@ namespace VoxelWorld.WorldGeneration.World
             UpdateSimulationFlags(playerCoord);
         }
 
-        // Helper to check if a chunk is currently being generated (so we don't request twice)
-        private bool IsGenerating(Vector2Int coord) => chunkService.IsGenerating(coord);
+        private IEnumerable<Vector2Int> GetChunkCoordsInRings(Vector2Int center, int radius)
+        {
+            // Ring 0 (player chunk)
+            yield return center;
+
+            // Rings 1..radius
+            for (int r = 1; r <= radius; r++)
+            {
+                int xMin = center.x - r;
+                int xMax = center.x + r;
+                int zMin = center.y - r;
+                int zMax = center.y + r;
+                
+                for (int x = xMin; x <= xMax; x++) yield return new Vector2Int(x, zMin);  // Bottom edge
+                for (int x = xMin; x <= xMax; x++) yield return new Vector2Int(x, zMax);  // Top edge
+                for (int z = zMin + 1; z < zMax; z++) yield return new Vector2Int(xMin, z);  // Left edge
+                for (int z = zMin + 1; z < zMax; z++) yield return new Vector2Int(xMax, z);  // Right edge (excluding corners)
+            }
+        }
 
         private void UpdateSimulationFlags(Vector2Int playerCoord)
         {

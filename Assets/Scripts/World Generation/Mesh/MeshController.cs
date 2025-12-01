@@ -21,23 +21,13 @@ namespace VoxelWorld.WorldGeneration.Meshes
         // Each face orientation has its own quad vertices
         private static readonly Vector3[,] faceVerts = new Vector3[6, 4]
         {
-            // north (+z)
-            { new(0,0,1), new(1,0,1), new(1,1,1), new(0,1,1) },
-
-            // south (-z)
-            { new(1,0,0), new(0,0,0), new(0,1,0), new(1,1,0) },
-
-            // west (-x)
-            { new(0,0,0), new(0,0,1), new(0,1,1), new(0,1,0) },
-
-            // east (+x)
-            { new(1,0,1), new(1,0,0), new(1,1,0), new(1,1,1) },
-
-            // up (+y)
-            { new(0,1,1), new(1,1,1), new(1,1,0), new(0,1,0) },
-
-            // down (-y)
-            { new(0,0,0), new(1,0,0), new(1,0,1), new(0,0,1) }
+            
+            { new(0,0,1), new(1,0,1), new(1,1,1), new(0,1,1) },  // north (+z)
+            { new(1,0,0), new(0,0,0), new(0,1,0), new(1,1,0) },  // south (-z)
+            { new(0,0,0), new(0,0,1), new(0,1,1), new(0,1,0) },  // west (-x)
+            { new(1,0,1), new(1,0,0), new(1,1,0), new(1,1,1) },  // east (+x)
+            { new(0,1,1), new(1,1,1), new(1,1,0), new(0,1,0) },  // up (+y)
+            { new(0,0,0), new(1,0,0), new(1,0,1), new(0,0,1) }   // down (-y)
         };
 
         private const int ATLAS_GRID = 5;      // 5x5 atlas (adjust if yours is different)
@@ -55,29 +45,46 @@ namespace VoxelWorld.WorldGeneration.Meshes
             List<Vector2> uvs = new(4096);
             List<Vector3> normals = new(4096);
 
-            // Loop through all blocks
+            Vector3Int pos = default;     // reused struct
+            Vector3Int nPos = default;    // reused struct
+            Block block;
+            Block neighbor;
+
             for (int x = 0; x < sizeX; x++)
                 for (int y = 0; y < sizeY; y++)
                     for (int z = 0; z < sizeZ; z++)
                     {
-                        Block block = model.blocks[x, y, z];
-                        if (block == null || block.blockType == BlockType.Air)
-                            continue;
+                        block = model.blocks[x, y, z];
+                        if (block == null || block.blockType == BlockType.Air) continue;
 
-                        Vector3Int pos = new Vector3Int(x, y, z);
+                        pos.x = x;
+                        pos.y = y;
+                        pos.z = z;
 
-                        // Check each of the 6 faces
+                        int surfaceY = chunk.GroundLevelAt(x, z);
+
+                        bool isTreeBlock = (block.blockType == BlockType.Wood || block.blockType == BlockType.Leaves);
+                        bool isUnderground = (!isTreeBlock && y < surfaceY);
+
                         for (int face = 0; face < 6; face++)
                         {
-                            Vector3Int nPos = pos + (Vector3Int)faceNormal[face];
-                            Block neighbor = chunk.GetNeighborBlock(nPos.x, nPos.y, nPos.z);
+                            // Skip bottom-most world face
+                            if (y == 0 && face == 5) continue;
+
+                            // Skip underground side faces
+                            if (isUnderground && face < 4) continue;
+
+                            // Compute neighbor block coordinates
+                            nPos.x = pos.x + faceNormal[face].x;
+                            nPos.y = pos.y + faceNormal[face].y;
+                            nPos.z = pos.z + faceNormal[face].z;
+
+                            // Fetch neighbor block (now aware of adjacent chunks)
+                            neighbor = chunk.GetNeighborBlock(nPos.x, nPos.y, nPos.z);
 
                             bool solidNeighbor = neighbor != null && neighbor.blockType != BlockType.Air;
-
                             if (!solidNeighbor)
-                            {
                                 AddQuad(face, pos, block.blockType, verts, tris, uvs, normals);
-                            }
                         }
                     }
 
@@ -86,6 +93,7 @@ namespace VoxelWorld.WorldGeneration.Meshes
                 vertices = verts.ToArray(),
                 triangles = tris.ToArray(),
                 uvs = uvs.ToArray(),
+                normals = normals.ToArray(),
             };
         }
 

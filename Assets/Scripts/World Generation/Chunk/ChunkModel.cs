@@ -6,9 +6,6 @@ namespace VoxelWorld.WorldGeneration.Chunks
     {
         public Block[,,] blocks;
 
-        public ChunkModel(int size, int height)
-        {
-            blocks = new Block[size, height, size];
-        }
+        public ChunkModel(int size, int height) => blocks = new Block[size, height, size];
     }
 }

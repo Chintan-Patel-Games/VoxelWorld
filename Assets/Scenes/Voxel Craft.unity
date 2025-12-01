@@ -288,10 +288,10 @@ MonoBehaviour:
     type: 3}
   seed: 12345
   chunkLoadDelay: 0
-  VIEW_RADIUS: 8
-  LOAD_RADIUS: 10
-  UNLOAD_DATA_RADIUS: 12
-  simulationDistance: 2
+  VIEW_RADIUS: 6
+  LOAD_RADIUS: 7
+  UNLOAD_DATA_RADIUS: 8
+  simulationDistance: 1
   fogColor: {r: 0.7, g: 0.8, b: 0.9, a: 1}
   useLinearFog: 1
   fogDensity: 0.05
