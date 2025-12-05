@@ -2,6 +2,7 @@ using Cinemachine;
 using UnityEngine;
 using VoxelWorld.Core.Events;
 using VoxelWorld.Core.Utilities;
+using VoxelWorld.UI;
 using VoxelWorld.WorldGeneration.Chunks;
 using VoxelWorld.WorldGeneration.World;
 
@@ -23,6 +24,8 @@ namespace VoxelWorld.Core
         private Transform player;
         private Vector3 spawnPos;
 
+        [SerializeField] private UIService uiService;
+        public UIService UIService => uiService;
         public WorldService worldService { get; private set; }
         public TreeService TreeService { get; private set; }
         public EventService EventService { get; private set; }
@@ -37,14 +40,8 @@ namespace VoxelWorld.Core
 
         private void InitializeServices()
         {
-            worldService = new WorldService(
-                chunkPrefab,
-                worldSeed,
-                loadDelay
-            );
-
+            worldService = new WorldService(chunkPrefab, worldSeed, loadDelay);
             TreeService = new TreeService(worldSeed);
-
             EventService = new EventService();
         }
 
@@ -119,5 +116,16 @@ namespace VoxelWorld.Core
         }
 
         public static ChunkService ChunkService => Instance.worldService.GetChunkService();
+
+        public void OnExitGame()
+        {
+#if UNITY_EDITOR
+            UnityEditor.EditorApplication.isPlaying = false;
+#elif UNITY_WEBGL
+                UIService.ShowMessagePopupUI(StringConstants.WebGLCloseGamePopup);
+#else
+                Application.Quit();
+#endif
+        }
     }
 }

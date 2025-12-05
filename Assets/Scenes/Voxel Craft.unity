@@ -604,6 +604,7 @@ MonoBehaviour:
   worldController: {fileID: 924326230}
   loadDelay: 0.02
   worldSeed: 12345
+  uiService: {fileID: 0}
 --- !u!1 &1343332824
 GameObject:
   m_ObjectHideFlags: 0
