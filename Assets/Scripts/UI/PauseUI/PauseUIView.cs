@@ -2,26 +2,28 @@ using UnityEngine;
 using UnityEngine.UI;
 using VoxelWorld.UI.Interface;
 
-namespace VoxelWorld.UI.MainMenuUI
+namespace VoxelWorld.UI.PauseUI
 {
-    public class MainMenuUIView : MonoBehaviour, IUIView
+    public class PauseUIView : MonoBehaviour, IUIView
     {
         [SerializeField] private CanvasGroup canvasGroup;
-        [SerializeField] private Button startButton;
-        [SerializeField] private Button quitButton;
+        [SerializeField] private Button resumeButton;
+        [SerializeField] private Button optionsButton;
+        [SerializeField] private Button mainMenuButton;
 
-        private MainMenuUIController controller;
+        private PauseUIController controller;
 
         public void SetController(IUIController controllerToSet)
         {
-            controller = controllerToSet as MainMenuUIController;
+            controller = controllerToSet as PauseUIController;
             SubscribeToButtonClicks();
         }
 
         private void SubscribeToButtonClicks()
         {
-            startButton.onClick.AddListener(controller.StartGame);
-            quitButton.onClick.AddListener(controller.QuitGame);
+            resumeButton.onClick.AddListener(controller.ResumeGame);
+            optionsButton.onClick.AddListener(controller.ShowOptionsUI);
+            mainMenuButton.onClick.AddListener(controller.ShowMainMenuUI);
         }
 
         public void EnableView()

@@ -117,6 +117,10 @@ namespace VoxelWorld.Core
 
         public static ChunkService ChunkService => Instance.worldService.GetChunkService();
 
+        public void OnResumeGame() => Time.timeScale = 1f;
+
+        public void OnPauseGame() => Time.timeScale = 0f;
+
         public void OnExitGame()
         {
 #if UNITY_EDITOR
