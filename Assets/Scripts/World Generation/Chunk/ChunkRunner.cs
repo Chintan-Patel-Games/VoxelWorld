@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using VoxelWorld.Core;
+using VoxelWorld.Core.Events;
 using VoxelWorld.Core.Utilities;
 using VoxelWorld.WorldGeneration.Meshes;
 
@@ -95,7 +96,7 @@ namespace VoxelWorld.WorldGeneration.Chunks
 
             controller.View.meshFilter.sharedMesh = mesh;
 
-            GameService.Instance.EventService.OnChunkMeshReady.InvokeEvent(controller.Coord);
+            EventService.Instance.OnChunkMeshReady.InvokeEvent(controller.Coord);
 
             // If chunk requires collider, enqueue collider assignment to be done later
             if (controller.RequiresCollider)

@@ -8,6 +8,7 @@ namespace VoxelWorld.UI.MainMenuUI
     {
         [SerializeField] private CanvasGroup canvasGroup;
         [SerializeField] private Button startButton;
+        [SerializeField] private Button optionButton;
         [SerializeField] private Button quitButton;
 
         private MainMenuUIController controller;
@@ -21,6 +22,7 @@ namespace VoxelWorld.UI.MainMenuUI
         private void SubscribeToButtonClicks()
         {
             startButton.onClick.AddListener(controller.StartGame);
+            optionButton.onClick.AddListener(controller.ShowOptionsUI);
             quitButton.onClick.AddListener(controller.QuitGame);
         }
 

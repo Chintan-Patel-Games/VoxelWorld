@@ -6,6 +6,9 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/Scenes/SampleScene.unity
-    guid: 99c9720ab356a0642a771bea13969a05
+    path: Assets/Scenes/Main Menu.unity
+    guid: 5da1af36e8a6b3349b422838165b0185
+  - enabled: 1
+    path: Assets/Scenes/VoxelCraft.unity
+    guid: b023d98fad9f4624e8120862dc9fdabb
   m_configObjects: {}

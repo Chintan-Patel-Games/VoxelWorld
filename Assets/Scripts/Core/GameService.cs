@@ -1,5 +1,6 @@
 using Cinemachine;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using VoxelWorld.Core.Events;
 using VoxelWorld.Core.Utilities;
 using VoxelWorld.UI;
@@ -24,29 +25,36 @@ namespace VoxelWorld.Core
         private Transform player;
         private Vector3 spawnPos;
 
-        [SerializeField] private UIService uiService;
-        public UIService UIService => uiService;
         public WorldService worldService { get; private set; }
         public TreeService TreeService { get; private set; }
-        public EventService EventService { get; private set; }
+
+        private bool isGameScene;
 
         protected override void Awake()
         {
             base.Awake();
             Application.targetFrameRate = 60;
-            InitializeServices();
-            worldController.SetupFog();
+
+            // Determine scene type
+            isGameScene = SceneManager.GetActiveScene().name == "VoxelCraft";
+
+            if (isGameScene)
+            {
+                InitializeServices();
+                worldController.SetupFog();
+            }
         }
 
         private void InitializeServices()
         {
             worldService = new WorldService(chunkPrefab, worldSeed, loadDelay);
             TreeService = new TreeService(worldSeed);
-            EventService = new EventService();
         }
 
         private void Start()
         {
+            if (!isGameScene) return; // MainMenu scene -> skip world generation
+
             // Force ChunkRunner to initialize so its Update() will run
             _ = ChunkRunner.Instance;
 
@@ -60,7 +68,7 @@ namespace VoxelWorld.Core
             // Pick spawn position
             spawnPos = new Vector3(Random.Range(-200, 200), 0, Random.Range(-200, 200));
 
-            EventService.OnChunkMeshReady.AddListener(OnSpawnChunkMeshReady);
+            EventService.Instance.OnChunkMeshReady.AddListener(OnSpawnChunkMeshReady);
 
             // Generate initial chunk where player will spawn
             worldService.GenerateInitialChunk(spawnPos);
@@ -72,14 +80,14 @@ namespace VoxelWorld.Core
 
         private void OnSpawnChunkMeshReady(Vector2Int coord)
         {
-            Vector2Int spawnCoord = worldService.WorldToChunkCoord(spawnPos);
+            if (!isGameScene) return;
 
-            // Only spawn when THIS EXACT chunk mesh is ready
-            if (coord != spawnCoord)
-                return;
+            Vector2Int spawnCoord = worldService.WorldToChunkCoord(spawnPos);
+            
+            if (coord != spawnCoord) return;  // Only spawn when THIS EXACT chunk mesh is ready
 
             // Stop listening (so no duplicate spawns)
-            EventService.OnChunkMeshReady.RemoveListener(OnSpawnChunkMeshReady);
+            EventService.Instance.OnChunkMeshReady.RemoveListener(OnSpawnChunkMeshReady);
 
             SpawnPlayerAtSurface();
         }
@@ -88,17 +96,13 @@ namespace VoxelWorld.Core
         {
             int surfaceY = worldService.GetSurfaceHeight(spawnPos);
 
-            Vector3 finalSpawnPos = new Vector3(
-                spawnPos.x,
-                surfaceY + 2f,
-                spawnPos.z
-            );
+            Vector3 finalSpawnPos = new Vector3(spawnPos.x, surfaceY + 2f, spawnPos.z);
 
-            // Step 5: Spawn Player
+            // Spawn Player
             GameObject playerObj = Instantiate(playerPrefab, finalSpawnPos, Quaternion.identity);
             player = playerObj.transform;
 
-            // Step 6: Attach Cinemachine
+            // Attach Cinemachine
             Transform followCam = playerObj.transform.Find("PlayerCameraRoot");
 
             if (followCam != null)
@@ -111,25 +115,17 @@ namespace VoxelWorld.Core
                 Debug.LogWarning("PlayerCameraRoot not found inside player prefab.");
             }
 
-            // Step 7: Begin streaming chunks around player
+            EventService.Instance.OnGameInitialized.InvokeEvent(true);
+            UIService.Instance.HideLoadingUI();
+
+            // Begin streaming chunks around player
             worldService.StartStreamingFromPlayer(player, worldController);
         }
 
         public static ChunkService ChunkService => Instance.worldService.GetChunkService();
 
+        // ---------------- GAME FLOW CONTROLS -----------------
         public void OnResumeGame() => Time.timeScale = 1f;
-
         public void OnPauseGame() => Time.timeScale = 0f;
-
-        public void OnExitGame()
-        {
-#if UNITY_EDITOR
-            UnityEditor.EditorApplication.isPlaying = false;
-#elif UNITY_WEBGL
-                UIService.ShowMessagePopupUI(StringConstants.WebGLCloseGamePopup);
-#else
-                Application.Quit();
-#endif
-        }
     }
 }

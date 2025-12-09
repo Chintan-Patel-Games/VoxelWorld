@@ -1,4 +1,3 @@
-using UnityEngine.SceneManagement;
 using VoxelWorld.Core;
 using VoxelWorld.UI.Interface;
 
@@ -12,12 +11,16 @@ namespace VoxelWorld.UI.PauseUI
         {
             this.view = view;
             this.view.SetController(this);
-            Show();
+            Hide();
         }
 
         public void ResumeGame() => GameService.Instance.OnResumeGame();
-        public void ShowOptionsUI() => GameService.Instance.UIService.ShowOptionsUI();
-        public void ShowMainMenuUI() => GameService.Instance.UIService.ShowMainMenuUI();
+        public void ShowOptionsUI() => UIService.Instance.ShowOptionsUI();
+        public void ShowMainMenuUI()
+        {
+            Hide();
+            UIService.Instance.ShowMainMenuUI();
+        }
 
         public void Show() => view.EnableView();
         public void Hide() => view.DisableView();

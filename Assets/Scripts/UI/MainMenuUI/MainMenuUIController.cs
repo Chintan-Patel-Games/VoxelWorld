@@ -1,6 +1,8 @@
+using UnityEditor.MPE;
 using UnityEngine.SceneManagement;
 using VoxelWorld.Core;
 using VoxelWorld.UI.Interface;
+using VoxelWorld.Core.Events;
 
 namespace VoxelWorld.UI.MainMenuUI
 {
@@ -15,9 +17,27 @@ namespace VoxelWorld.UI.MainMenuUI
             Show();
         }
 
-        public void StartGame() => SceneManager.LoadScene("Voxel Craft");
+        public void StartGame()
+        {
+            Hide();
+            UIService.Instance.ShowLoadingUI();
+            Core.Events.EventService.Instance.OnStartLoading.InvokeEvent(true);
+            SceneManager.LoadScene("VoxelCraft");
+        }
 
-        public void QuitGame() => GameService.Instance.OnExitGame();
+        public void ShowOptionsUI() => UIService.Instance.ShowOptionsUI();
+
+        public void QuitGame()
+        {
+            #if UNITY_EDITOR
+                UnityEditor.EditorApplication.isPlaying = false;
+            #elif UNITY_WEBGL
+                Debug.Log("WebGL cannot quit the application.");
+            #else
+                Application.Quit();
+            #endif
+        }
+
 
         public void Show() => view.EnableView();
         public void Hide() => view.DisableView();
