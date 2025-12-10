@@ -11,4 +11,6 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/VoxelCraft.unity
     guid: b023d98fad9f4624e8120862dc9fdabb
-  m_configObjects: {}
+  m_configObjects:
+    com.unity.input.settings: {fileID: 11400000, guid: 89d84aea0d82bb947b1d3923507219dc,
+      type: 2}

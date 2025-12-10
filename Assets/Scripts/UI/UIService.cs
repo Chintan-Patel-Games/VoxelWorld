@@ -1,4 +1,6 @@
 using UnityEngine;
+using VoxelWorld.Core;
+using VoxelWorld.Core.Events;
 using VoxelWorld.Core.Utilities;
 using VoxelWorld.UI.LoadingUI;
 using VoxelWorld.UI.MainMenuUI;
@@ -37,6 +39,8 @@ namespace VoxelWorld.UI
             loadingController = new LoadingUIController(loadingView);
             pauseController = new PauseUIController(pauseView);
             optionsController = new OptionsUIController(optionsView);
+
+            EventService.Instance.OnGamePause.AddListener(OnGamePause);
         }
 
         public void ShowMainMenuUI() => mainMenuController.Show();
@@ -45,7 +49,28 @@ namespace VoxelWorld.UI
         public void HideLoadingUI() => loadingController.Hide();
 
         public void ShowPauseUI() => pauseController.Show();
+        public void HidePauseUI() => pauseController.Hide();
 
         public void ShowOptionsUI() => optionsController.Show();
+
+        public void OnGamePause(bool paused)
+        {
+            Debug.Log("UIService received pause event: " + paused);
+
+            if (paused)
+            {
+                ShowPauseUI();
+                Time.timeScale = 0f;
+                Cursor.lockState = CursorLockMode.None;
+                Cursor.visible = true;
+            }
+            else
+            {
+                HidePauseUI();
+                Time.timeScale = 1f;
+                Cursor.lockState = CursorLockMode.Locked;
+                Cursor.visible = false;
+            }
+        }
     }
 }

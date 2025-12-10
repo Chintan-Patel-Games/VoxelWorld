@@ -2,6 +2,7 @@ using Cinemachine;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using VoxelWorld.Core.Events;
+using VoxelWorld.Core.PlayerSystem;
 using VoxelWorld.Core.Utilities;
 using VoxelWorld.UI;
 using VoxelWorld.WorldGeneration.Chunks;
@@ -12,9 +13,7 @@ namespace VoxelWorld.Core
     public class GameService : GenericMonoSingleton<GameService>
     {
         [Header("References")]
-        [SerializeField] private GameObject playerPrefab;
         [SerializeField] private GameObject chunkPrefab;
-        [SerializeField] private CinemachineVirtualCamera cinemachineCam;
         [SerializeField] private WorldController worldController;
 
         [Header("World Settings")]
@@ -58,7 +57,7 @@ namespace VoxelWorld.Core
             // Force ChunkRunner to initialize so its Update() will run
             _ = ChunkRunner.Instance;
 
-            if (playerPrefab == null || chunkPrefab == null || cinemachineCam == null || worldController == null)
+            if (chunkPrefab == null || worldController == null)
             {
                 Debug.LogError("GameService: Missing reference!");
                 enabled = false;
@@ -94,38 +93,20 @@ namespace VoxelWorld.Core
 
         private void SpawnPlayerAtSurface()
         {
-            int surfaceY = worldService.GetSurfaceHeight(spawnPos);
-
-            Vector3 finalSpawnPos = new Vector3(spawnPos.x, surfaceY + 2f, spawnPos.z);
-
-            // Spawn Player
-            GameObject playerObj = Instantiate(playerPrefab, finalSpawnPos, Quaternion.identity);
-            player = playerObj.transform;
-
-            // Attach Cinemachine
-            Transform followCam = playerObj.transform.Find("PlayerCameraRoot");
-
-            if (followCam != null)
-            {
-                cinemachineCam.Follow = followCam;
-                cinemachineCam.LookAt = followCam;
-            }
-            else
-            {
-                Debug.LogWarning("PlayerCameraRoot not found inside player prefab.");
-            }
+            // Delegates the responsibility to PlayerService
+            player = PlayerService.Instance.SpawnPlayerAtSurface(spawnPos);
 
             EventService.Instance.OnGameInitialized.InvokeEvent(true);
-            UIService.Instance.HideLoadingUI();
+            UIService.Instance.HideLoadingUI();  // Hide loading screen
+
+            // Lock + hide cursor for FPS control
+            Cursor.lockState = CursorLockMode.Locked;
+            Cursor.visible = false;
 
             // Begin streaming chunks around player
             worldService.StartStreamingFromPlayer(player, worldController);
         }
 
         public static ChunkService ChunkService => Instance.worldService.GetChunkService();
-
-        // ---------------- GAME FLOW CONTROLS -----------------
-        public void OnResumeGame() => Time.timeScale = 1f;
-        public void OnPauseGame() => Time.timeScale = 0f;
     }
 }
