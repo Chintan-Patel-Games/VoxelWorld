@@ -7,7 +7,7 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Morning1
+  m_Name: Dawn
   m_Shader: {fileID: 4800000, guid: eb3c6fb598ded4c71b8968e1c40a3b4d, type: 3}
   m_ShaderKeywords: 
   m_LightmapFlags: 0
@@ -21,18 +21,18 @@ Material:
     m_TexEnvs: []
     m_Floats:
     - _HorizonLineContribution: 0
-    - _HorizonLineExponent: 4
-    - _SkyGradientExponent: 2.5
+    - _HorizonLineExponent: 1
+    - _SkyGradientExponent: 4
     - _SunDiscContribution: 1
-    - _SunDiscExponent: 6250
-    - _SunDiscMultiplier: 2
+    - _SunDiscExponent: 100000
+    - _SunDiscMultiplier: 100
     - _SunHaloContribution: 0.5
-    - _SunHaloExponent: 25
+    - _SunHaloExponent: 50
     - _Title: 0
     - __dirty: 0
     m_Colors:
     - _HorizonLineColor: {r: 0, g: 0, b: 0, a: 1}
-    - _SkyGradientBottom: {r: 0.909804, g: 0.8431373, b: 0.76470596, a: 1}
-    - _SkyGradientTop: {r: 0.7686275, g: 0.79215693, b: 0.8078432, a: 1}
-    - _SunDiscColor: {r: 1, g: 0.96572006, b: 0.9044118, a: 1}
-    - _SunHaloColor: {r: 1, g: 0.74264705, b: 0.81186616, a: 1}
+    - _SkyGradientBottom: {r: 0.9294118, g: 0.8705883, b: 0.85098046, a: 1}
+    - _SkyGradientTop: {r: 0.6392157, g: 0.6862745, b: 0.7411765, a: 1}
+    - _SunDiscColor: {r: 1, g: 0.8604463, b: 0.6838235, a: 1}
+    - _SunHaloColor: {r: 1, g: 0.5841785, b: 0.2647059, a: 1}

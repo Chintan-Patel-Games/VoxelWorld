@@ -7,9 +7,9 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Day4
+  m_Name: Afternoon
   m_Shader: {fileID: 4800000, guid: eb3c6fb598ded4c71b8968e1c40a3b4d, type: 3}
-  m_ShaderKeywords: 
+  m_ShaderKeywords: _HORIZONLINEBLENDMODE_ADD _SUNHALOBLENDMODE_ADD _VIEW_FINAL
   m_LightmapFlags: 0
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
@@ -20,19 +20,23 @@ Material:
     serializedVersion: 3
     m_TexEnvs: []
     m_Floats:
-    - _HorizonLineContribution: 0
+    - _HorizonLineBlendMode: 0
+    - _HorizonLineContribution: 1
     - _HorizonLineExponent: 1
-    - _SkyGradientExponent: 7
+    - _SkyGradientExponent: 1
     - _SunDiscContribution: 1
-    - _SunDiscExponent: 200000
-    - _SunDiscMultiplier: 100
+    - _SunDiscExponent: 100000
+    - _SunDiscExponentSize: 100000
+    - _SunDiscMultiplier: 100000
+    - _SunDiscMultiplierSharpness: 100000
+    - _SunHaloBlendMode: 0
     - _SunHaloContribution: 0.5
-    - _SunHaloExponent: 50
-    - _Title: 0
+    - _SunHaloExponent: 100
+    - _View: 0
     - __dirty: 0
     m_Colors:
-    - _HorizonLineColor: {r: 0, g: 0, b: 0, a: 1}
-    - _SkyGradientBottom: {r: 0.5222751, g: 0.76317495, b: 0.8455882, a: 1}
-    - _SkyGradientTop: {r: 0.22352943, g: 0.6039216, b: 0.7294118, a: 1}
+    - _HorizonLineColor: {r: 0, g: 0, b: 0, a: 0}
+    - _SkyGradientBottom: {r: 0.9607844, g: 0.90196085, b: 0.7725491, a: 1}
+    - _SkyGradientTop: {r: 0.90196085, g: 0.78823537, b: 0.58431375, a: 1}
     - _SunDiscColor: {r: 1, g: 1, b: 1, a: 1}
-    - _SunHaloColor: {r: 0.83823526, g: 0.9196754, b: 1, a: 1}
+    - _SunHaloColor: {r: 0.7735849, g: 0.69111997, b: 0.62397647, a: 0}

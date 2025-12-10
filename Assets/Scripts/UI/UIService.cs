@@ -41,6 +41,7 @@ namespace VoxelWorld.UI
             optionsController = new OptionsUIController(optionsView);
 
             EventService.Instance.OnGamePause.AddListener(OnGamePause);
+            EventService.Instance.OnSkyboxChanged.AddListener(ApplySkybox);
         }
 
         public void ShowMainMenuUI() => mainMenuController.Show();
@@ -55,8 +56,6 @@ namespace VoxelWorld.UI
 
         public void OnGamePause(bool paused)
         {
-            Debug.Log("UIService received pause event: " + paused);
-
             if (paused)
             {
                 ShowPauseUI();
@@ -71,6 +70,28 @@ namespace VoxelWorld.UI
                 Cursor.lockState = CursorLockMode.Locked;
                 Cursor.visible = false;
             }
+        }
+
+        private void ApplySkybox(int index)
+        {
+            // Get OptionsUI View to access skybox material array
+            if (optionsController == null) return;
+            if (optionsView == null)
+            {
+                Debug.Log("[UIService] : No reference of Options View found");
+                return;
+            }
+
+            var mats = optionsView.SkyboxMaterials;
+
+            if (index < 0 || index >= mats.Length)
+            {
+                Debug.LogWarning("[UIService] Invalid skybox index: " + index);
+                return;
+            }
+
+            RenderSettings.skybox = mats[index];
+            DynamicGI.UpdateEnvironment(); // refresh lighting
         }
     }
 }

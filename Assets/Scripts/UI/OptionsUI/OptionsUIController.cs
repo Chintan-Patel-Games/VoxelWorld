@@ -1,4 +1,5 @@
 using UnityEngine;
+using VoxelWorld.Core.Events;
 using VoxelWorld.UI.Interface;
 
 namespace VoxelWorld.UI.OptionsUI
@@ -14,16 +15,8 @@ namespace VoxelWorld.UI.OptionsUI
             Hide();
         }
 
-        // --- AUDIO ---
         public void SetBGMVolume(float value) => AudioListener.volume = value;
-
-        // --- SKYBOX ---
-        public void SetSkybox(int index)
-        {
-            if (index < 0 || index >= view.SkyboxMaterials.Length) return;
-
-            RenderSettings.skybox = view.SkyboxMaterials[index];
-        }
+        public void SetSkybox(int index) => EventService.Instance.OnSkyboxChanged.InvokeEvent(index);
 
         public void Show() => view.EnableView();
         public void Hide() => view.DisableView();

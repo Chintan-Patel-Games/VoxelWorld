@@ -9,6 +9,7 @@ namespace VoxelWorld.Core.Events
         public EventController<bool> OnGameInitialized { get; private set; }
         public EventController<bool> OnGamePause { get; private set; }
         public EventController<Vector2Int> OnChunkMeshReady { get; private set; }
+        public EventController<int> OnSkyboxChanged { get; private set; }
 
         public EventService()
         {
@@ -16,6 +17,7 @@ namespace VoxelWorld.Core.Events
             OnGameInitialized = new EventController<bool>();
             OnGamePause = new EventController<bool>();
             OnChunkMeshReady = new EventController<Vector2Int>();
+            OnSkyboxChanged = new EventController<int>();
         }
     }
 }

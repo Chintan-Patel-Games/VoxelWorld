@@ -12,7 +12,7 @@ namespace VoxelWorld.Core.InputSystem
         // Actions
         public bool Jump { get; set; }
         public bool Sprint { get; set; }
-        public bool PausePressed { get; set; }
+        public bool Pause { get; set; }
 
         protected override void Awake()
         {

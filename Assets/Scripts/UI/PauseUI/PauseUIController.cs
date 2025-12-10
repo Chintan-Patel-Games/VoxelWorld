@@ -1,5 +1,6 @@
 using UnityEngine;
 using VoxelWorld.Core;
+using VoxelWorld.Core.Events;
 using VoxelWorld.UI.Interface;
 
 namespace VoxelWorld.UI.PauseUI
@@ -15,11 +16,12 @@ namespace VoxelWorld.UI.PauseUI
             Hide();
         }
 
-        public void ResumeGame() => Time.timeScale = 1f;
+        public void ResumeGame() => EventService.Instance.OnGamePause.InvokeEvent(false);
         public void ShowOptionsUI() => UIService.Instance.ShowOptionsUI();
         public void ShowMainMenuUI()
         {
             Hide();
+            Time.timeScale = 1f;
             UIService.Instance.ShowMainMenuUI();
         }
 

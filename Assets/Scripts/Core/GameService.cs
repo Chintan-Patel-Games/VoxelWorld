@@ -32,6 +32,7 @@ namespace VoxelWorld.Core
         protected override void Awake()
         {
             base.Awake();
+            Time.timeScale = 1f;  // safety reset every time gameplay scene loads
             Application.targetFrameRate = 60;
 
             // Determine scene type
