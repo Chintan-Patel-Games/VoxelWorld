@@ -16,12 +16,23 @@ namespace VoxelWorld.UI.PauseUI
             Hide();
         }
 
-        public void ResumeGame() => EventService.Instance.OnGamePause.InvokeEvent(false);
-        public void ShowOptionsUI() => UIService.Instance.ShowOptionsUI();
+        public void ResumeGame()
+        {
+            GlobalSoundService.Instance.SoundService.PlaySFX(Sound.SoundType.UI_BUTTON_CLICK);
+            EventService.Instance.OnGamePause.InvokeEvent(false);
+        }
+
+        public void ShowOptionsUI()
+        {
+            GlobalSoundService.Instance.SoundService.PlaySFX(Sound.SoundType.UI_BUTTON_CLICK);
+            UIService.Instance.ShowOptionsUI();
+        }
+
         public void ShowMainMenuUI()
         {
             Hide();
             Time.timeScale = 1f;
+            GlobalSoundService.Instance.SoundService.PlaySFX(Sound.SoundType.UI_BUTTON_CLICK);
             UIService.Instance.ShowMainMenuUI();
         }
 

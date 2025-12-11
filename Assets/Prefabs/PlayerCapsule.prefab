@@ -333,24 +333,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f9f5b4272a5de9745ab9db4594cd19d4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  model:
-    MoveSpeed: 4
-    SprintSpeed: 6
-    RotationSpeed: 25
-    SpeedChangeRate: 10
-    JumpHeight: 1.2
-    Gravity: -20
-    JumpTimeout: 0.1
-    FallTimeout: 0.15
-    Grounded: 1
-    GroundedOffset: -0.14
-    GroundedRadius: 0.5
-    GroundLayers:
-      serializedVersion: 2
-      m_Bits: 8
-    TopClamp: 90
-    BottomClamp: -90
-  CinemachineCameraTarget: {fileID: 6036142096378408033}
+  CinemachineCameraTarget: {fileID: 3894105348154695038}
 --- !u!114 &7363764188529336914
 MonoBehaviour:
   m_ObjectHideFlags: 0

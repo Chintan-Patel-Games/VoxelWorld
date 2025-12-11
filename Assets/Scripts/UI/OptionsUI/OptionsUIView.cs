@@ -53,7 +53,7 @@ namespace VoxelWorld.UI.OptionsUI
             skyboxDropdown.onValueChanged.AddListener(OnSkyboxSelected);
         }
 
-        private void SubscribeToButtons() => backBtn.onClick.AddListener(controller.Hide);
+        private void SubscribeToButtons() => backBtn.onClick.AddListener(controller.OnClose);
 
         public void OnSkyboxSelected(int index) => controller.SetSkybox(index);
 

@@ -20,16 +20,22 @@ namespace VoxelWorld.UI.MainMenuUI
         public void StartGame()
         {
             Hide();
+            GlobalSoundService.Instance.SoundService.PlaySFX(Sound.SoundType.UI_BUTTON_CLICK);
             UIService.Instance.ShowLoadingUI();
             Core.Events.EventService.Instance.OnStartLoading.InvokeEvent(true);
             SceneManager.LoadScene("VoxelCraft");
         }
 
-        public void ShowOptionsUI() => UIService.Instance.ShowOptionsUI();
+        public void ShowOptionsUI()
+        {
+            GlobalSoundService.Instance.SoundService.PlaySFX(Sound.SoundType.UI_BUTTON_CLICK);
+            UIService.Instance.ShowOptionsUI();
+        }
 
         public void QuitGame()
         {
             #if UNITY_EDITOR
+                GlobalSoundService.Instance.SoundService.PlaySFX(Sound.SoundType.UI_BUTTON_CLICK);
                 UnityEditor.EditorApplication.isPlaying = false;
             #elif UNITY_WEBGL
                 Debug.Log("WebGL cannot quit the application.");

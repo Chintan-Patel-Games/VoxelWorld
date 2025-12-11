@@ -4,6 +4,7 @@ using UnityEngine.SceneManagement;
 using VoxelWorld.Core.Events;
 using VoxelWorld.Core.PlayerSystem;
 using VoxelWorld.Core.Utilities;
+using VoxelWorld.Sound;
 using VoxelWorld.UI;
 using VoxelWorld.WorldGeneration.Chunks;
 using VoxelWorld.WorldGeneration.World;
@@ -20,10 +21,10 @@ namespace VoxelWorld.Core
         [SerializeField] private float loadDelay = 0.02f;
         [SerializeField] private int worldSeed = 12345;
 
-        // Services
         private Transform player;
         private Vector3 spawnPos;
 
+        // Services
         public WorldService worldService { get; private set; }
         public TreeService TreeService { get; private set; }
 
@@ -77,6 +78,8 @@ namespace VoxelWorld.Core
             Vector2Int spawnCoord = worldService.WorldToChunkCoord(spawnPos);
             worldService.GetChunkService().BuildChunkMesh(spawnCoord);
         }
+
+        private void Update() => GlobalSoundService.Instance.SoundService?.UpdateFootsteps(Time.deltaTime);
 
         private void OnSpawnChunkMeshReady(Vector2Int coord)
         {
