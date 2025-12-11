@@ -27,6 +27,11 @@ namespace VoxelWorld.WorldGeneration.Blocks
                 case BlockType.Leaves:
                     return new Vector2Int(1, 1);
 
+                case BlockType.Snow:
+                    if (dir == 4) return new Vector2Int(1, 3); // Top face (grass)
+                    if (dir == 5) return new Vector2Int(2, 4); // Bottom face (dirt)
+                    return new Vector2Int(4, 4);               // Side faces
+
                 default:
                     return new Vector2Int(0, 3); // fallback tile
             }
