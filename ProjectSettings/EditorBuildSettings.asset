@@ -7,7 +7,7 @@ EditorBuildSettings:
   m_Scenes:
   - enabled: 1
     path: Assets/Scenes/Main Menu.unity
-    guid: 5da1af36e8a6b3349b422838165b0185
+    guid: 3fa3631c097f0aa43b7d0de946938a7f
   - enabled: 1
     path: Assets/Scenes/VoxelCraft.unity
     guid: b023d98fad9f4624e8120862dc9fdabb
