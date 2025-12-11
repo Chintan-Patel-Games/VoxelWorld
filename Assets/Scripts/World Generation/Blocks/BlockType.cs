@@ -5,6 +5,8 @@ namespace VoxelWorld.WorldGeneration.Blocks
         Air,
         Grass,
         Dirt,
-        Stone
+        Stone,
+        Wood,
+        Leaves
     }
 }
