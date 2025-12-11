@@ -9,6 +9,10 @@ namespace VoxelWorld.Player
         private CharacterController controller;
         private Transform cameraTarget;
 
+        // Footsteps
+        private bool wasMoving = false;
+        private bool wasSprinting = false;
+
         private float verticalVelocity;
         private float terminalVelocity = 53f;
         private float speed;
@@ -75,6 +79,40 @@ namespace VoxelWorld.Player
             Vector3 inputDir = (playerTransform.right * input.Move.x + playerTransform.forward * input.Move.y).normalized;
 
             controller.Move(inputDir * (speed * Time.deltaTime) + new Vector3(0f, verticalVelocity, 0f) * Time.deltaTime);
+
+            // Determine movement state
+            float horizontalSpeed = new Vector3(controller.velocity.x, 0, controller.velocity.z).magnitude;
+            bool isMoving = horizontalSpeed > 0.1f;
+            bool isSprinting = InputService.Instance.Sprint;
+
+            // Apply footstep logic
+            HandleFootsteps(isMoving, isSprinting);
+        }
+
+        private void HandleFootsteps(bool isMoving, bool isSprinting)
+        {
+            // Must be grounded to play footsteps OR If player is not moving -> stop footsteps
+            if (!isMoving || !Grounded)
+            {
+                GlobalSoundService.Instance.SoundService.StopFootsteps();
+                wasMoving = false;
+                return;
+            }
+
+            // If player JUST started moving -> start footsteps
+            if (isMoving && !wasMoving)
+            {
+                GlobalSoundService.Instance.SoundService.StartFootsteps(isSprinting);
+            }
+
+            // If player changed from walk -> sprint or sprint -> walk
+            if (wasSprinting != isSprinting && wasMoving)
+            {
+                GlobalSoundService.Instance.SoundService.UpdateFootstepsMode(isSprinting);
+            }
+
+            wasMoving = isMoving;
+            wasSprinting = isSprinting;
         }
 
         private void JumpAndGravity()
@@ -89,7 +127,13 @@ namespace VoxelWorld.Player
                     verticalVelocity = -2f;
 
                 if (input.Jump && jumpTimeoutDelta <= 0f)
+                {
                     verticalVelocity = Mathf.Sqrt(model.JumpHeight * -2f * model.Gravity);
+
+                    // STOP FOOTSTEPS IMMEDIATELY WHEN JUMPING
+                    GlobalSoundService.Instance.SoundService.StopFootsteps();
+                    wasMoving = false;
+                }
 
                 if (jumpTimeoutDelta >= 0f)
                     jumpTimeoutDelta -= Time.deltaTime;
@@ -100,6 +144,10 @@ namespace VoxelWorld.Player
 
                 if (fallTimeoutDelta >= 0f)
                     fallTimeoutDelta -= Time.deltaTime;
+
+                // STOP FOOTSTEPS WHILE FALLING
+                GlobalSoundService.Instance.SoundService.StopFootsteps();
+                wasMoving = false;
 
                 input.Jump = false;
             }
