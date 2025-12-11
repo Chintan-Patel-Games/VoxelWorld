@@ -65,6 +65,13 @@ namespace VoxelWorld.WorldGeneration.Chunks
 
             mesh.RecalculateNormals();
             GetComponent<MeshFilter>().mesh = mesh;
+
+            var collider = GetComponent<MeshCollider>();
+            if (collider != null)
+            {
+                collider.sharedMesh = null; // clear old reference
+                collider.sharedMesh = mesh;
+            }
         }
 
         bool IsBlockSolid(Vector3Int pos)
