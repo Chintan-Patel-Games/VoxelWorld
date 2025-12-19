@@ -1,4 +1,3 @@
-using Cinemachine;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using VoxelWorld.Core.Events;

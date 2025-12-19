@@ -1,4 +1,4 @@
-using Cinemachine;
+using Unity.Cinemachine;
 using UnityEngine;
 using VoxelWorld.Core.Events;
 using VoxelWorld.Core.Utilities;
@@ -17,7 +17,7 @@ namespace VoxelWorld.Core.PlayerSystem
         [SerializeField] private PlayerModel model;
 
         [Tooltip("Reference to the Virtual Camera")]
-        [SerializeField] private CinemachineVirtualCamera virtualCamera;
+        [SerializeField] private CinemachineCamera virtualCamera;
 
         private Transform playerPos;
 
